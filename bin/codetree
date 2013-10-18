@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+require 'codetree'
+require 'optparse'
+
+$detail = :medium
+$flat = false
+$quiet = false
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: codetree [options]"
+
+  opts.on("-f", "--[no-]flat", "display flat list/tree") do |v|
+    $flat = v
+  end
+  opts.on("-d", "--detail DETAIL", [:none, :light, :medium , :full],"Specify a detail value ( none, light, medium, full]") do |v|
+    $detail = v.to_sym
+  end
+  opts.on("-q", "--[no-]quiet","Remove node symbols ('*') from output tree/list view") do |v|
+    $quiet = v
+  end
+
+end.parse!
+
+
+
+
+
+codetree = Codetree::ParseTree.new(Dir['lib/*/*/*/*.rb'] + Dir['lib/*/*/*.rb'] + Dir['lib/*/*.rb'] + Dir['lib/*.rb'])
+codetree.print_tree detail: $detail, flat: $flat, quiet: $quiet
