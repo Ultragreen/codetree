@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Codetree::VERSION
   spec.authors       = ["Romain GEORGES"]
   spec.email         = ["romain@ultragreen.net"]
-  spec.description   = %q{Scan code to map methods/ classes/ modules and build tree of modules namespaces}
+  spec.description   = %q{Scan code to map methods or classes or modules and build tree of modules namespaces}
   spec.summary       = %q{Usefull tools for code audit commands}
   spec.homepage      = "http://www.ultragreen.net"
   spec.license       = "BSD"
