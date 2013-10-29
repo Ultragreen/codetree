@@ -22,10 +22,16 @@ module Codetree
       @line = line
     end
 
+    # @!group Virtual Accessors
+
     def ancestor
       return @ancestors.last
     end
+
+    # @!endgroup
     
+
+
     def render
       return name.to_s if self.ancestors == []
       case type
@@ -36,6 +42,7 @@ module Codetree
       end
     end
 
+    # @!endgroup
 
   end
 
