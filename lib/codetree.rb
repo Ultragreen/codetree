@@ -14,15 +14,15 @@ module Codetree
     attr_reader :line
     attr_reader :name
 
-    def initialize(type: :defn, ancestors: [], scope: :none, name: "", line: 0 )
-      @type = type
-      @ancestors = ancestors
-      @scope = scope
-      @name = name
-      @line = line
+    def initialize(_options = { :type =>  :defn, :ancestors => [], :scope => :none, :name =>  "", :line => 0 })
+      @type = _options[:type] || :defn
+      @ancestors = _options[:ancestors] || []
+      @scope = _options[:scope] || :none
+      @name = _options[:name] || ""
+      @line = _options[:line] || 0
     end
 
-    # @!group Virtual Accessors
+    # @!group Virtual Scopeors
 
     def ancestor
       return @ancestors.last
@@ -73,8 +73,9 @@ module Codetree
     
     
     
-    def format_operator(name, detail: :full)
+    def format_operator(name, _options = {:detail =>  :full})
       res = ""
+      _options[:detail] ||= :full
       scope = { 
         :private => {   :full => "Private ",   :medium => '-', :light => ''},
         :public => {    :full => "Public ",    :medium => "+", :light => ''}, 
@@ -90,14 +91,17 @@ module Codetree
         operator.ancestors.each do |ancestor|
           res += @operators[ancestor].render
         end
-        res = scope[operator.scope][detail] + type[operator.type][detail] + res +  operator.render
+        res = scope[operator.scope][_options[:detail]] + type[operator.type][_options[:detail]] + res +  operator.render
       end
       return res
     end
     
     
-    def print_tree(detail: :medium, flat: false, quiet: false)
-      print_subtree(@root,0, detail: detail, flat: flat, quiet: quiet )
+    def print_tree(_options = { :detail => :medium, :flat =>  false, :quiet => false})
+      _options[:detail] ||= :medium
+      _options[:flat] ||= false
+      _options[:quiet] ||= false
+     print_subtree(@root,0, _options )
     end
     
     
@@ -123,14 +127,14 @@ module Codetree
     
     
     def register_operator(nodetype, name, linenr, ancestors)
-      @operators[name] =  Codetree::Operator::new(type: nodetype, name: name, line: linenr, ancestors: ancestors )
+      @operators[name] =  Codetree::Operator::new({ :type => nodetype, :name => name, :line => linenr, :ancestors => ancestors })
       @operators_index[@curr_position.to_s] = [nodetype, name]
     end
 
     def define_scopes!
       @operators.each do |name,item|
         unless item.ancestor.nil? then
-          klass = eval "#{format_operator item.ancestor, detail: :light}"
+          klass = eval "#{format_operator item.ancestor, :detail => :light}"
           if item.type == :defn then
             item.scope = :private if klass.private_method_defined? name
             item.scope = :protected if klass.protected_method_defined? name
@@ -164,18 +168,21 @@ module Codetree
 
 
 
-    def print_subtree(item, level, detail: :full, flat: false, quiet: false)
+    def print_subtree(item, level, _options = { :detail => :full, :flat => false, :quiet => false})
+       _options[:flat] ||= false
+      _options[:detail] ||= :full
+      _options[:quiet] ||= false
       items = @tree[item]
       unless items == nil
-        indent = (flat)? '': level > 0 ? sprintf("%#{level * 2}s", " ") : "" 
-        node = (quiet)? "":"* "
+        indent = (_options[:flat])? '': level > 0 ? sprintf("%#{level * 2}s", " ") : "" 
+        node = (_options[:quiet])? "":"* "
         items.each do |operator|
-          if detail == :none then
+          if _options[:detail] == :none then
             puts "#{indent}#{node}#{operator.name}"
           else
-            puts "#{indent}#{node}#{format_operator operator.name, detail: detail}" 
+            puts "#{indent}#{node}#{format_operator operator.name, :detail => _options[:detail]}" 
           end
-          print_subtree(operator, level + 1, detail: detail, flat: flat, quiet: quiet)
+          print_subtree(operator, level + 1, _options)
         end
       end
     end

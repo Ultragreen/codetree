@@ -26,4 +26,4 @@ end.parse!
 
 
 codetree = Codetree::ParseTree.new(Dir['lib/*/*/*/*.rb'] + Dir['lib/*/*/*.rb'] + Dir['lib/*/*.rb'] + Dir['lib/*.rb'])
-codetree.print_tree detail: $detail, flat: $flat, quiet: $quiet
+codetree.print_tree :detail => $detail, :flat => $flat, :quiet => $quiet
